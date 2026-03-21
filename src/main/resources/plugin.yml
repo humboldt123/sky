@@ -1,37 +1,47 @@
 name: Crypt
-version: ${project.version}
-main: me.bigratenthusiast.crypt.Main
-api-version: 1.16
-authors: [bigratenthusiast, sourtaste]
-description: Helpful custom commands for the crypt and catacombs pvp minigame server
-website: chroma.bigrat.monster
+version: '${version}'
+main: me.bigratenthusiast.crypt.Crypt
+api-version: '1.21'
+authors: [Vish]
+description: Custom plugin for the Crypt KitPvP server
+
 commands:
-  quickheal:
-    description: Heal and fully saturate a player
-    usage: quickheal [player]
-    permission: crypt.*
-    permission-message: You do not have permission to use this command.
-  deathmatch:
-    description: Initiate a deathmatch between all players in survival mode
-    usage: deathmatch
-    permission: crypt.*
-    permission-message: You do not have permission to use this command.
   rematch:
-    description: Teleport everyone to spawn, clear them, and set them to survival
-    usage: rematch
+    description: Reset everything and teleport all players to lobby
     permission: crypt.*
-    permission-message: You do not have permission to use this command.
-  resetmap:
-    description: Reset the map (laggy)
-    usage: resetmap
+  deathmatch:
+    description: Teleport alive players to deathmatch area
     permission: crypt.*
-    permission-message: You do not have permission to use this command.
+  quickheal:
+    description: Apply regen and saturation to a player
+    usage: /quickheal <player>
+    permission: crypt.*
   killall:
-    description: Kills certain entities
-    usage: killall
+    description: Kill all non-player non-villager non-painting non-item-frame entities
     permission: crypt.*
-    permission-message: You do not have permission to use this command.
+  resetmap:
+    description: Paste schematic and run full reset
+    permission: crypt.*
+  kits:
+    description: Open kit selection GUI
+  shop:
+    description: Open nearest shop GUI
+  crypt:
+    description: Admin configuration commands
+    permission: crypt.*
+  addswitchtonearest:
+    description: Add a switch to the nearest interactable
+    usage: /addswitchtonearest <switch>
+    permission: crypt.*
+  removeswitchfromnearest:
+    description: Remove a switch from the nearest interactable
+    usage: /removeswitchfromnearest <switch>
+    permission: crypt.*
+  listswitchesonnearest:
+    description: List switches on the nearest interactable
+    permission: crypt.*
 
 permissions:
   crypt.*:
+    description: All crypt admin commands
     default: op
