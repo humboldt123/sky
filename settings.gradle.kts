@@ -1,1 +1,1 @@
-rootProject.name = "crypt"
+rootProject.name = "sky"

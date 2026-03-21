@@ -3,7 +3,7 @@ plugins {
     id("com.gradleup.shadow") version "8.3.5"
 }
 
-group = "me.bigratenthusiast"
+group = "me.humboldt123"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -30,9 +30,9 @@ kotlin {
 tasks {
     shadowJar {
         archiveClassifier.set("")
-        relocate("kotlin", "me.bigratenthusiast.crypt.kotlin")
-        relocate("org.jetbrains", "me.bigratenthusiast.crypt.jetbrains")
-        relocate("org.intellij", "me.bigratenthusiast.crypt.intellij")
+        relocate("kotlin", "me.humboldt123.sky.kotlin")
+        relocate("org.jetbrains", "me.humboldt123.sky.jetbrains")
+        relocate("org.intellij", "me.humboldt123.sky.intellij")
     }
 
     build {

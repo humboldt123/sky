@@ -1,47 +1,47 @@
-name: Crypt
+name: SkyPvP
 version: '${version}'
-main: me.bigratenthusiast.crypt.Crypt
+main: me.humboldt123.sky.Sky
 api-version: '1.21'
 authors: [Vish]
-description: Custom plugin for the Crypt KitPvP server
+description: Custom plugin for the Sky PvP server
 
 commands:
   rematch:
     description: Reset everything and teleport all players to lobby
-    permission: crypt.*
+    permission: sky.*
   deathmatch:
     description: Teleport alive players to deathmatch area
-    permission: crypt.*
+    permission: sky.*
   quickheal:
     description: Apply regen and saturation to a player
     usage: /quickheal <player>
-    permission: crypt.*
+    permission: sky.*
   killall:
     description: Kill all non-player non-villager non-painting non-item-frame entities
-    permission: crypt.*
+    permission: sky.*
   resetmap:
     description: Paste schematic and run full reset
-    permission: crypt.*
+    permission: sky.*
   kits:
     description: Open kit selection GUI
   shop:
     description: Open nearest shop GUI
-  crypt:
+  sky:
     description: Admin configuration commands
-    permission: crypt.*
+    permission: sky.*
   addswitchtonearest:
     description: Add a switch to the nearest interactable
     usage: /addswitchtonearest <switch>
-    permission: crypt.*
+    permission: sky.*
   removeswitchfromnearest:
     description: Remove a switch from the nearest interactable
     usage: /removeswitchfromnearest <switch>
-    permission: crypt.*
+    permission: sky.*
   listswitchesonnearest:
     description: List switches on the nearest interactable
-    permission: crypt.*
+    permission: sky.*
 
 permissions:
-  crypt.*:
-    description: All crypt admin commands
+  sky.*:
+    description: All sky admin commands
     default: op
