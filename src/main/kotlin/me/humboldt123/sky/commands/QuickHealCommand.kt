@@ -26,7 +26,7 @@ class QuickHealCommand : CommandExecutor, TabCompleter {
         target.addPotionEffect(PotionEffect(PotionEffectType.SATURATION, 100, 255, false, false))   // 5s
 
         val msg = if (sender is Player && sender.uniqueId == target.uniqueId) {
-            "§a${sender.name} quickhealed themself."
+            "§a${sender.name} quickhealed themselves"
         } else {
             "§a${sender.name} quickhealed ${target.name}."
         }

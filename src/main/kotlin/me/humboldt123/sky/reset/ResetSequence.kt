@@ -41,7 +41,7 @@ object ResetSequence {
         // 5. Restart snake tasks (after kill so stands are clean)
         plugin.snakeBlockTask.startAll()
 
-        Bukkit.broadcast(net.kyori.adventure.text.Component.text("§eMap reset!"))
+        Bukkit.broadcast(net.kyori.adventure.text.Component.text("§eRematch!"))
     }
 
     fun killEntities() {

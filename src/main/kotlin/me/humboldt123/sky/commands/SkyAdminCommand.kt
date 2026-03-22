@@ -25,7 +25,7 @@ class SkyAdminCommand(private val plugin: Sky) : CommandExecutor, TabCompleter {
 
         when (args[0].lowercase()) {
             "set" -> handleSet(sender, args)
-            "spawn" -> handleSpawn(sender, args)
+
             "cancel" -> handleCancel(sender)
             "reload" -> handleReload(sender)
             "switch" -> handleSwitch(sender, args)
@@ -63,34 +63,6 @@ class SkyAdminCommand(private val plugin: Sky) : CommandExecutor, TabCompleter {
         sender.sendMessage("§a[Sky] Set '$key' to ${sender.location.toConfigString()}")
     }
 
-    private fun handleSpawn(sender: CommandSender, args: Array<out String>) {
-        if (args.size < 2) { sender.sendMessage("§cUsage: /sky spawn <add|remove|list>"); return }
-        when (args[1].lowercase()) {
-            "add" -> {
-                if (sender !is Player) { sender.sendMessage("§cOnly players can use this command."); return }
-                plugin.configManager.addSpawnPoint(sender.location)
-                val count = plugin.configManager.getSpawnPoints().size
-                sender.sendMessage("§a[Sky] Added spawn point #${count - 1} at ${sender.location.toConfigString()}")
-            }
-            "remove" -> {
-                if (args.size < 3) { sender.sendMessage("§cUsage: /sky spawn remove <index>"); return }
-                val index = args[2].toIntOrNull()
-                if (index == null) { sender.sendMessage("§cIndex must be a number."); return }
-                if (plugin.configManager.removeSpawnPoint(index)) {
-                    sender.sendMessage("§a[Sky] Removed spawn point #$index")
-                } else {
-                    sender.sendMessage("§cInvalid spawn point index: $index")
-                }
-            }
-            "list" -> {
-                val points = plugin.configManager.getSpawnPoints()
-                if (points.isEmpty()) { sender.sendMessage("§7No spawn points configured."); return }
-                sender.sendMessage("§6Spawn Points:")
-                points.forEachIndexed { i, loc -> sender.sendMessage("§7  #$i: ${loc.toConfigString()}") }
-            }
-            else -> sender.sendMessage("§cUsage: /sky spawn <add|remove|list>")
-        }
-    }
 
     private fun handleCancel(sender: CommandSender) {
         if (sender !is Player) { sender.sendMessage("§cOnly players can use this command."); return }
@@ -749,7 +721,7 @@ class SkyAdminCommand(private val plugin: Sky) : CommandExecutor, TabCompleter {
     private fun sendHelp(sender: CommandSender) {
         sender.sendMessage("§6[Sky] Admin Commands:")
         sender.sendMessage("§7  /sky set <key> §8— set a named location")
-        sender.sendMessage("§7  /sky spawn <add|remove|list> §8— manage spawn points")
+
         sender.sendMessage("§7  /sky switch <register|remove|list> §8— manage switches")
         sender.sendMessage("§7  /sky jumppad <add|remove|setswitch> §8— jump pads")
         sender.sendMessage("§7  /sky bouncestand <add|remove|setswitch> §8— bounce stands")
@@ -771,14 +743,14 @@ class SkyAdminCommand(private val plugin: Sky) : CommandExecutor, TabCompleter {
 
     override fun onTabComplete(sender: CommandSender, command: Command, label: String, args: Array<out String>): List<String> {
         return when (args.size) {
-            1 -> listOf("set", "spawn", "cancel", "reload", "switch",
+            1 -> listOf("set", "cancel", "reload", "switch",
                 "jumppad", "bouncestand", "waterarc", "lavatrap", "snake",
                 "portal", "pondportal", "bell", "crystal", "ghast",
                 "kit", "shop")
                 .filter { it.startsWith(args[0], ignoreCase = true) }
             2 -> when (args[0].lowercase()) {
                 "set" -> plugin.configManager.validLocationKeys.filter { it.startsWith(args[1], ignoreCase = true) }.toList()
-                "spawn" -> listOf("add", "remove", "list").filter { it.startsWith(args[1], ignoreCase = true) }
+
                 "switch" -> listOf("register", "remove", "list").filter { it.startsWith(args[1], ignoreCase = true) }
                 "jumppad", "bouncestand" -> listOf("add", "remove", "setswitch").filter { it.startsWith(args[1], ignoreCase = true) }
                 "waterarc" -> listOf("add", "pos1", "pos2", "remove", "setswitch").filter { it.startsWith(args[1], ignoreCase = true) }

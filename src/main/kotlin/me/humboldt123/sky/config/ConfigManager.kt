@@ -10,8 +10,6 @@ class ConfigManager(private val plugin: Sky) {
     // Named locations: lobby-spawn, ghast-stable, deathmatch-center
     private val locations = mutableMapOf<String, Location>()
 
-    // Spawn points list
-    private val spawnPoints = mutableListOf<Location>()
 
     val validLocationKeys = setOf("lobby-spawn", "ghast-stable", "deathmatch-center")
 
@@ -35,17 +33,7 @@ class ConfigManager(private val plugin: Sky) {
             }
         }
 
-        // Load spawn points
-        spawnPoints.clear()
-        val spawnList = config.getStringList("spawnPoints")
-        for (str in spawnList) {
-            val loc = locationFromConfigString(str)
-            if (loc != null) {
-                spawnPoints.add(loc)
-            } else {
-                plugin.logger.warning("Invalid spawn point: $str")
-            }
-        }
+
     }
 
     fun save() {
@@ -56,8 +44,6 @@ class ConfigManager(private val plugin: Sky) {
             config.set("locations.$key", loc.toConfigString())
         }
 
-        // Save spawn points
-        config.set("spawnPoints", spawnPoints.map { it.toConfigString() })
 
         plugin.saveConfig()
     }
@@ -73,17 +59,5 @@ class ConfigManager(private val plugin: Sky) {
     fun getDeathmatchCenter(): Location? = locations["deathmatch-center"]
     fun getGhastStable(): Location? = locations["ghast-stable"]
 
-    fun getSpawnPoints(): List<Location> = spawnPoints.toList()
 
-    fun addSpawnPoint(location: Location) {
-        spawnPoints.add(location)
-        save()
-    }
-
-    fun removeSpawnPoint(index: Int): Boolean {
-        if (index < 0 || index >= spawnPoints.size) return false
-        spawnPoints.removeAt(index)
-        save()
-        return true
-    }
 }

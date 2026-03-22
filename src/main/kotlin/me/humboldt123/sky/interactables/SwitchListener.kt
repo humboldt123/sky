@@ -146,6 +146,7 @@ class SwitchListener(private val plugin: Sky) : Listener {
 
     fun startBouncePigPolling() {
         bouncePigTask?.cancel()
+        killAllBouncePigs()
         val manager = plugin.interactableManager
         if (manager.bounceStands.isEmpty()) return
 
@@ -173,6 +174,7 @@ class SwitchListener(private val plugin: Sky) : Listener {
     fun stopBouncePigPolling() {
         bouncePigTask?.cancel()
         bouncePigTask = null
+        killAllBouncePigs()
     }
 
     private fun spawnBouncePig(name: String, data: InteractableManager.BounceStandData) {

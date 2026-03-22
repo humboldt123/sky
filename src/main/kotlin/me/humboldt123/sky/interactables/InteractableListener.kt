@@ -170,7 +170,7 @@ class InteractableListener(private val plugin: Sky) : Listener {
                     if (targets.isEmpty()) return@Runnable
                     val target = targets.random()
                     target.world.strikeLightning(target.location)
-                    Bukkit.broadcast(net.kyori.adventure.text.Component.text("§eLightning strikes from above!"))
+                    Bukkit.broadcast(net.kyori.adventure.text.Component.text("§6Lightning strikes from above!"))
                 }, 200L)
 
                 return
