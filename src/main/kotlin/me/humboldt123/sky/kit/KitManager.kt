@@ -3,7 +3,7 @@ package me.humboldt123.sky.kit
 import me.humboldt123.sky.Sky
 import me.humboldt123.sky.util.pluginName
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
+
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -205,7 +205,7 @@ class KitManager(private val plugin: Sky) : Listener {
 
         val inv = Bukkit.createInventory(
             KitEditHolder(kitName), 54,
-            Component.text("Edit Kit: $kitName", NamedTextColor.GOLD)
+            Component.text("Edit Kit: $kitName")
         )
 
         // Place glass panes

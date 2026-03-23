@@ -9,8 +9,10 @@ import org.bukkit.Sound
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityResurrectEvent
+import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.event.player.PlayerFishEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.entity.ThrownPotion
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
@@ -30,6 +32,33 @@ class AbilityListener(private val plugin: Sky) : Listener {
         const val GRAPPLE_VELOCITY = 3.5         // multiplier
 
         const val TOTEM_RECHARGE_SECONDS = 45
+
+        const val POTION_BOOTS_SPLASH_COOLDOWN = 100L    // 5 seconds
+        const val POTION_BOOTS_LINGERING_COOLDOWN = 300L // 15 seconds
+    }
+
+    // --- Infinite Wind Charges (while wearing Winged Boots) ---
+
+    @EventHandler
+    fun onWindChargeUse(event: PlayerInteractEvent) {
+        if (!event.action.isRightClick) return
+        if (event.hand != EquipmentSlot.HAND) return
+
+        val player = event.player
+        val item = player.inventory.itemInMainHand
+        if (item.type != Material.WIND_CHARGE) return
+        if (!isWearingWingedBoots(player)) return
+
+        // Restore the wind charge after 1 tick (vanilla consumes it during this event)
+        val amount = item.amount
+        plugin.server.scheduler.runTaskLater(plugin, Runnable {
+            val current = player.inventory.itemInMainHand
+            if (current.type == Material.WIND_CHARGE) {
+                current.amount = amount
+            } else if (current.type == Material.AIR) {
+                player.inventory.setItemInMainHand(ItemStack(Material.WIND_CHARGE, amount))
+            }
+        }, 1L)
     }
 
     // --- Winged Boots ---
@@ -179,6 +208,30 @@ class AbilityListener(private val plugin: Sky) : Listener {
 
             player.inventory.setItemInOffHand(rechargingTotem)
         }, 1L)
+    }
+
+    // --- Potion Boots (infinite potions with cooldown) ---
+
+    private fun isWearingPotionBoots(player: Player): Boolean {
+        val boots = player.inventory.boots ?: return false
+        return boots.type == Material.NETHERITE_BOOTS && boots.hasPluginName("Potion Boots")
+    }
+
+    @EventHandler
+    fun onPotionThrow(event: ProjectileLaunchEvent) {
+        val potion = event.entity as? ThrownPotion ?: return
+        val player = potion.shooter as? Player ?: return
+        if (!isWearingPotionBoots(player)) return
+
+        val potionItem = potion.item.clone()
+        val cooldownTicks = if (potionItem.type == Material.LINGERING_POTION)
+            POTION_BOOTS_LINGERING_COOLDOWN else POTION_BOOTS_SPLASH_COOLDOWN
+
+        plugin.server.scheduler.runTaskLater(plugin, Runnable {
+            if (!player.isOnline) return@Runnable
+            player.inventory.addItem(potionItem)
+            player.playSound(player.location, Sound.BLOCK_BREWING_STAND_BREW, 1.0f, 1.5f)
+        }, cooldownTicks)
     }
 
     fun resetAll() {

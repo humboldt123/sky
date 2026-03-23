@@ -10,6 +10,7 @@ import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
+import org.bukkit.Sound
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -24,6 +25,8 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
+import org.bukkit.inventory.meta.SkullMeta
+import com.destroystokyo.paper.profile.ProfileProperty
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -81,12 +84,22 @@ class NecromancerManager(private val plugin: Sky) : Listener {
         // Apply invisibility
         mob.addPotionEffect(PotionEffect(PotionEffectType.INVISIBILITY, Int.MAX_VALUE, 0, false, false))
 
-        // Equip skull + leather chestplate (same visual as necromancer)
+        // Equip custom skull + leather chestplate
         val equipment = mob.equipment ?: return
-        equipment.helmet = ItemStack(Material.SKELETON_SKULL) // TODO: TEST — match necromancer's actual skull
+        val skull = ItemStack(Material.PLAYER_HEAD)
+        val skullMeta = skull.itemMeta as SkullMeta
+        val profile = Bukkit.createProfile(UUID.randomUUID())
+        val textures = ProfileProperty("textures",
+            java.util.Base64.getEncoder().encodeToString(
+                """{"textures":{"SKIN":{"url":"http://textures.minecraft.net/texture/aea034076ca10959de9d541c817cd28d2a8b0aad7d8a8afc2b54253f6f0fed3"}}}""".toByteArray()
+            ))
+        profile.setProperty(textures)
+        skullMeta.playerProfile = profile
+        skull.itemMeta = skullMeta
+        equipment.helmet = skull
         val chestplate = ItemStack(Material.LEATHER_CHESTPLATE)
         val chestMeta = chestplate.itemMeta as LeatherArmorMeta
-        chestMeta.setColor(Color.fromRGB(50, 20, 50)) // Dark purple-ish // TODO: TEST color
+        chestMeta.setColor(Color.fromRGB(0x46, 0x2e, 0x61))
         chestplate.itemMeta = chestMeta
         equipment.chestplate = chestplate
 
@@ -241,18 +254,20 @@ class NecromancerManager(private val plugin: Sky) : Listener {
 
     private fun applyMark(shooter: Player, target: LivingEntity, durationSeconds: Double) {
         val durationMs = (durationSeconds * 1000).toLong()
-        val targetName = if (target is Player) target.name else target.type.name.lowercase()
+        val targetName = if (target is Player) target.name
+            else PlainTextComponentSerializer.plainText().serialize(target.name())
 
         // Check if already marked by same necromancer — stack time
         val existingMark = marks[target.uniqueId]
         if (existingMark != null && existingMark.necromancerUUID == shooter.uniqueId) {
             val newExpiry = existingMark.expiryTimeMs + durationMs
             marks[target.uniqueId] = MarkData(shooter.uniqueId, newExpiry)
-            shooter.sendMessage("§5Added ${durationSeconds.toInt()}s of marking to $targetName!")
+            shooter.sendActionBar(Component.text("§a+${durationSeconds.toInt()}s mark on $targetName"))
         } else {
             marks[target.uniqueId] = MarkData(shooter.uniqueId, System.currentTimeMillis() + durationMs)
-            shooter.sendMessage("§5Marked $targetName for ${durationSeconds.toInt()}s!")
+            shooter.sendActionBar(Component.text("§aMarked $targetName for ${durationSeconds.toInt()}s"))
         }
+        shooter.playSound(shooter.location, Sound.BLOCK_NOTE_BLOCK_CHIME, 1.0f, 1.5f)
 
         // Redirect idle minions to nearest mark
         redirectIdleMinions(shooter.uniqueId)
@@ -365,7 +380,7 @@ class NecromancerManager(private val plugin: Sky) : Listener {
             val owner = Bukkit.getPlayer(ownerUUID) ?: return@Runnable
             if (owner.gameMode == org.bukkit.GameMode.SPECTATOR) return@Runnable
             owner.inventory.addItem(ItemStack(eggType))
-            owner.sendMessage("§5Minion spawn egg returned!")
+            owner.playSound(owner.location, Sound.BLOCK_NOTE_BLOCK_CHIME, 1.0f, 1.0f)
         }, MINION_RESPAWN_TICKS)
 
         pendingEggTasks.getOrPut(ownerUUID) { mutableListOf() }.add(task)
